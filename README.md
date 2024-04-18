@@ -1,7 +1,7 @@
 # deskora
 Deskora Booking Service
 
-#setup
+## setup
 ```npm install``` in both folders.
 
 Server start: node app.js
