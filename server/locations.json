@@ -1,0 +1,107 @@
+[
+    {
+        "locationID": 1,
+        "locationName": "Central Library",
+        "address": "123 Book St, Library City, LB 45678",
+        "soonestDateAvailable": "2024-04-20",
+        "image": "https://chipublib.bibliocommons.com/events/uploads/images/full/d8363c027650685edad363d8a5326676/WestTown2023.jpg"
+    },
+    {
+        "locationID": 2,
+        "locationName": "Downtown Clinic",
+        "address": "789 Health Ave, Medtown, MT 12345",
+        "soonestDateAvailable": "2024-04-15",
+        "image": "https://www.mountcarmelhealth.com/sites/default/files/hg_features/hg_location/439b6404326ddcceb6b2ff1712744690.jpg"
+    },
+    {
+        "locationID": 3,
+        "locationName": "Riverside Park",
+        "address": "456 Nature Rd, Green Town, GT 67890",
+        "soonestDateAvailable": "2024-04-18",
+        "image": "https://newyorkyimby.com/wp-content/uploads/2021/03/456-Greenwich-Street-Exterior-Rendering.jpg"
+    },
+    {
+        "locationID": 4,
+        "locationName": "City Hall",
+        "address": "321 Civic Blvd, Capitol City, CC 10101",
+        "soonestDateAvailable": "2024-04-22",
+        "image": ""
+    },
+    {
+        "locationID": 5,
+        "locationName": "Grand Hotel",
+        "address": "987 Luxury Ln, Suite City, SC 20202",
+        "soonestDateAvailable": "2024-04-19",
+        "image": ""
+    },
+    {
+        "locationID": 6,
+        "locationName": "Beachside Resort",
+        "address": "654 Ocean View Dr, Coastal City, CC 30303",
+        "soonestDateAvailable": "2024-04-21",
+        "image": ""
+    },
+    {
+        "locationID": 7,
+        "locationName": "Mountain Retreat",
+        "address": "321 Peak Rd, Summit Place, SP 40404",
+        "soonestDateAvailable": "2024-04-23",
+        "image": ""
+    },
+    {
+        "locationID": 8,
+        "locationName": "Urban Art Gallery",
+        "address": "456 Gallery Ln, Art Town, AT 50505",
+        "soonestDateAvailable": "2024-04-25",
+        "image": ""
+    },
+    {
+        "locationID": 9,
+        "locationName": "Historic Museum",
+        "address": "789 History Blvd, Oldtown, OT 60606",
+        "soonestDateAvailable": "2024-04-24",
+        "image": ""
+    },
+    {
+        "locationID": 10,
+        "locationName": "Tech Hub",
+        "address": "123 Innovation Dr, Tech City, TC 70707",
+        "soonestDateAvailable": "2024-04-17",
+        "image": ""
+    },
+    {
+        "locationID": 11,
+        "locationName": "Garden Cafe",
+        "address": "321 Blossom St, Floral City, FC 80808",
+        "soonestDateAvailable": "2024-04-16",
+        "image": ""
+    },
+    {
+        "locationID": 12,
+        "locationName": "Sky High Observatory",
+        "address": "654 Starry Rd, Sky Town, ST 90909",
+        "soonestDateAvailable": "2024-04-30",
+        "image": ""
+    },
+    {
+        "locationID": 13,
+        "locationName": "Aquatic Center",
+        "address": "456 Water Way, River City, RC 10110",
+        "soonestDateAvailable": "2024-04-26",
+        "image": ""
+    },
+    {
+        "locationID": 14,
+        "locationName": "Countryside B&B",
+        "address": "321 Country Ln, Rural Place, RP 20212",
+        "soonestDateAvailable": "2024-04-29",
+        "image": ""
+    },
+    {
+        "locationID": 15,
+        "locationName": "Fashion Plaza",
+        "address": "789 Trendy Ave, Style City, SC 30313",
+        "soonestDateAvailable": "2024-04-27",
+        "image": ""
+    }
+]
