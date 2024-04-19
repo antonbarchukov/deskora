@@ -80,18 +80,75 @@ app.post("/login", cors(), (req, res) => {
     });
 });
 
-// Booking route
-app.post("/createbooking", cors(), (req, res) => {
-    console.log("[POST /createbooking]");
-    const { email, locationId, book_start, book_end } = req.body;
+function updateSoonestDateAvailable() {
+    // Read the locations file first to initialize the soonest dates
+    fs.readFile(LOCATIONS_FILE, "utf8", (err, locationData) => {
+        if (err) {
+            console.error("Error reading locations file:", err);
+            return;
+        }
 
-    if (!email || !locationId || !book_start || !book_end) {
+        const locations = JSON.parse(locationData);
+        // Initialize a map with all locations having "No Bookings Found" initially
+        const locationDates = locations.reduce((acc, location) => {
+            acc[location.locationID] = "No Bookings Found";
+            return acc;
+        }, {});
+
+        // Read the bookings file to find the earliest date for each location that has bookings
+        fs.readFile(BOOKINGS_FILE, "utf8", (err, bookingData) => {
+            if (err) {
+                console.error("Error reading bookings file:", err);
+                return;
+            }
+
+            const bookings = JSON.parse(bookingData);
+            bookings.forEach((booking) => {
+                const { locationID, book_start, book_end } = booking;
+                const bookingDate = new Date(book_start).toISOString();
+                // Only update if there's no booking set or found a sooner booking date
+                if (locationDates[locationID] === "No Bookings Found" || locationDates[locationID] > bookingDate) {
+                    locationDates[locationID] = new Date(book_end).toISOString();
+                }
+            });
+
+            // Apply the computed dates to the locations array
+            locations.forEach((location) => {
+                location.soonestDateAvailable = locationDates[location.locationID];
+            });
+
+            // Write the updated locations back to the locations file
+            fs.writeFile(LOCATIONS_FILE, JSON.stringify(locations, null, 2), (err) => {
+                if (err) {
+                    console.error("Error writing to locations file:", err);
+                } else {
+                    console.log("Updated locations with soonest available dates successfully.");
+                }
+            });
+        });
+    });
+}
+
+// Booking route
+app.post("/createbooking", (req, res) => {
+    console.log("[POST /createbooking]");
+    console.log(req.body);
+    const { email, locationID, book_start, book_end } = req.body;
+
+    if (!email || !locationID || !book_start || !book_end) {
+        console.log(email, locationID, book_start, book_end);
         return res.status(400).send("Email, location ID, book start, and book end times are required");
     }
 
     // Convert book_start and book_end to Date objects for easier comparison
     const newStart = new Date(book_start);
     const newEnd = new Date(book_end);
+    const currentDate = new Date();
+
+    // Check if the booking start date is in the past
+    if (newStart < currentDate) {
+        return res.status(400).send("Booking start time must be in the future.");
+    }
 
     if (newStart >= newEnd) {
         return res.status(400).send("The start time must be before the end time");
@@ -115,17 +172,18 @@ app.post("/createbooking", cors(), (req, res) => {
             }
 
             const bookings = bookingsData.length ? JSON.parse(bookingsData) : [];
-            const overlappingBooking = bookings.find((booking) => booking.locationId === locationId && new Date(booking.book_start) < newEnd && new Date(booking.book_end) > newStart);
+            const overlappingBooking = bookings.find((booking) => booking.locationID === locationID && new Date(booking.book_start) < newEnd && new Date(booking.book_end) > newStart);
 
             if (overlappingBooking) {
                 return res.status(400).send("This booking overlaps with another existing booking.");
             }
 
-            bookings.push({ email, locationId, book_start, book_end });
+            bookings.push({ email, locationID, book_start, book_end });
             fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), (err) => {
                 if (err) {
                     return res.status(500).send("Error saving booking");
                 }
+                updateSoonestDateAvailable();
                 res.status(201).send("Booking created successfully");
             });
         });
@@ -280,18 +338,26 @@ app.delete("/delbookings", (req, res) => {
                 console.error("Error writing to bookings file:", writeErr);
                 return res.status(500).send("Failed to delete booking");
             }
+            updateSoonestDateAvailable();
             res.send("Booking deleted successfully");
         });
     });
 });
 
-// Endpoint to update booking times
 app.patch("/updateBooking", (req, res) => {
     console.log("[PATCH /updateBooking]");
     const { email, locationID, newStart, newEnd } = req.body;
 
     if (!email || !locationID || !newStart || !newEnd) {
         return res.status(400).send("All fields (email, locationID, newStart, newEnd) are required");
+    }
+
+    const start = new Date(newStart);
+    const end = new Date(newEnd);
+
+    // Validate that newStart is before newEnd
+    if (start >= end) {
+        return res.status(400).send("The start time must be before the end time");
     }
 
     fs.readFile(BOOKINGS_FILE, "utf8", (err, data) => {
@@ -323,9 +389,41 @@ app.patch("/updateBooking", (req, res) => {
                 console.error("Error writing to bookings file:", writeErr);
                 return res.status(500).send("Failed to update booking");
             }
+            updateSoonestDateAvailable(); // Ensure this function also validates dates
             res.send("Booking updated successfully");
         });
     });
+});
+
+app.patch("/updateProfile", (req, res) => {
+    console.log("[PATCH /updateProfile]");
+    const { email, newPassword } = req.body;
+
+    // Validate the input
+    if (!email || !newPassword) {
+        return res.status(400).send("Email and new password are required.");
+    }
+
+    try {
+        // Read the existing users data
+        let users = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+        const userIndex = users.findIndex((user) => user.email === email);
+
+        if (userIndex === -1) {
+            return res.status(404).send("User not found.");
+        }
+
+        // Update the password
+        users[userIndex].password = newPassword;
+
+        // Write the updated user data back to the JSON file
+        fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+        res.send("Password updated successfully.");
+    } catch (err) {
+        console.error("Failed to update password:", err);
+        res.status(500).send("Internal Server Error.");
+    }
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,8 +1,14 @@
 <template>
     <main class="bg-gray-100 py-16">
         <div class="container mx-auto">
+            <div v-if="successMessage" class="flex justify-between items-center p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+                <span>{{ successMessage }}</span>
+                <button @click="clearSuccessMessage" class="text-green-700 hover:text-green-900 dark:hover:text-green-800 focus:outline-none">
+                    <span class="fas fa-times"></span>
+                </button>
+            </div>
             <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2">
-                <div class="w-full md:w-1/2 lg:w-1/3" v-show="recentlyBooked && recentlyBooked.locationDetails">
+                <RouterLink to="/profile" class="w-full md:w-1/2 lg:w-1/3 cursor" v-show="recentlyBooked && recentlyBooked.locationDetails">
                     <h1 class="text-xl md:text-2xl font-bold" v-if="$store.state.user">Recently Booked for {{ $store.state.user.email }}</h1>
                     <div class="w-full my-5">
                         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -13,7 +19,7 @@
                             <div class="p-4">
                                 <h3 class="text-lg font-semibold">{{ recentlyBooked.locationDetails?.locationName }}</h3>
                                 <p class="text-gray-700">{{ recentlyBooked.locationDetails?.address }}</p>
-                                <p class="text-gray-700 mb-4">{{ recentlyBooked?.book_start }} to {{ recentlyBooked?.book_end }}</p>
+                                <p class="text-gray-700 mb-4">{{ formatDate(recentlyBooked?.book_start) }} to {{ formatDate(recentlyBooked?.book_end) }}</p>
                                 <div class="flex items-center">
                                     <span class="bg-gray-200 p-2 rounded-full leading-none text-center">
                                         <i class="far fa-heart"></i>
@@ -28,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </RouterLink>
                 <div :class="{ 'w-full': !recentlyBooked.locationDetails, 'w-full md:w-1/2 lg:w-2/3 px-5': recentlyBooked.locationDetails }">
                     <div class="border p-4 rounded-lg">
                         <div class="flex justify-between mb-4">
@@ -79,7 +85,7 @@
             <!-- suggestions / search section -->
             <div class="text-4xl my-4">Suggestions / Search</div>
             <div class="flex flex-wrap -mx-2">
-                <div class="w-full md:w-1/2 lg:w-1/3 px-2 my-2" v-for="item in bookData" :key="item">
+                <div class="w-full md:w-1/2 lg:w-1/3 px-2 my-2 cursor-pointer" v-for="item in bookData" :key="item" @click="showModal(item)">
                     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                         <div class="h-56 flex justify-center items-center">
                             <img :src="item.image || '/img/no-location.webp'" class="w-full h-full object-cover" />
@@ -88,7 +94,7 @@
                         <div class="p-4">
                             <h3 class="text-lg font-semibold">{{ item.locationName }}</h3>
                             <p class="text-gray-700">{{ item.address }}</p>
-                            <p class="text-gray-700 mb-4">{{ item.soonestDateAvailable }}</p>
+                            <p class="text-gray-700 mb-4"><i>Available Next:</i> {{ formatDate(item.soonestDateAvailable) }}</p>
                             <div class="flex items-center">
                                 <span class="bg-gray-200 p-2 rounded-full leading-none text-center">
                                     <i class="far fa-heart"></i>
@@ -103,6 +109,15 @@
                         </div>
                     </div>
                 </div>
+                <Modal
+                    :booking="selectedBooking"
+                    :isOpen="modalOpen"
+                    :reserveModal="true"
+                    :error-message="errorMessage"
+                    @update:isOpen="modalOpen = $event"
+                    @update:errorMessage="errorMessage = $event"
+                    @createBooking="handleCreateBooking"
+                />
             </div>
         </div>
     </main>
@@ -112,6 +127,9 @@
 import { ref, computed, nextTick, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
+import { format, parseISO, isValid } from "date-fns";
+
+import Modal from "./CardModal.vue";
 
 // State management
 const store = useStore();
@@ -121,6 +139,11 @@ const bookData = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const recentlyBooked = ref([]); // To store the recently booked data
+
+const selectedBooking = ref(null);
+const modalOpen = ref(false);
+const errorMessage = ref("");
+const successMessage = ref("");
 
 // Base URL for axios
 axios.defaults.baseURL = "http://localhost:3000";
@@ -157,6 +180,67 @@ const getRecentlyBooked = async () => {
         console.error("Error loading recent bookings:", err);
     }
 };
+
+const showModal = (booking) => {
+    successMessage.value = "";
+    errorMessage.value = "";
+
+    // Function to get today's date in the required format for datetime-local input
+    const getTodayFormatted = () => format(new Date(), "yyyy-MM-dd'T'HH:mm");
+
+    // Check if the provided date string is valid; if not, use today's date
+    const getValidDate = (dateStr) => {
+        if (!dateStr || dateStr === "No Bookings Found" || !isValid(parseISO(dateStr))) {
+            return getTodayFormatted();
+        }
+        return format(parseISO(dateStr), "yyyy-MM-dd'T'HH:mm");
+    };
+
+    // Use soonestDateAvailable if valid, otherwise fallback to today's date
+    const bookStart = getValidDate(booking.soonestDateAvailable);
+
+    // Update selectedBooking with the new or fallback date
+    selectedBooking.value = { ...booking, book_start: bookStart };
+    modalOpen.value = true;
+};
+
+const clearSuccessMessage = () => {
+    successMessage.value = "";
+};
+
+const handleCreateBooking = async (passedBooking) => {
+    loading.value = true;
+    error.value = null;
+    successMessage.value = "";
+
+    try {
+        await axios.post("/createBooking", {
+            email: user.value.email,
+            locationID: passedBooking.locationID,
+            book_start: passedBooking.bookStartx,
+            book_end: passedBooking.bookEnd,
+        });
+        modalOpen.value = false;
+        successMessage.value = "Booking created successfully!";
+        fetchBookData();
+        getRecentlyBooked();
+    } catch (err) {
+        error.value = "Failed to create booking: " + err.message;
+        errorMessage.value = err.response ? `Failed to create booking: ${err.response.data}` : "Failed to create booking due to an unknown error";
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Function to format date or return the input if it's a non-date string
+function formatDate(dateStr) {
+    try {
+        const date = parseISO(dateStr); // Parses the date string into a Date object
+        return format(date, "PPpp"); // 'PPpp' is a date-fns format that represents "Date and Time"
+    } catch (error) {
+        return dateStr; // Return the original string if parsing fails
+    }
+}
 
 // Component initialization
 onBeforeMount(async () => {
