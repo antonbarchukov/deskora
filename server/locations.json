@@ -25,83 +25,83 @@
     "locationName": "City Hall",
     "address": "321 Civic Blvd, Capitol City, CC 10101",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://map.ccdcboise.com/wp-content/uploads/2019/01/6-InnAt500-5-1199x800.jpg"
   },
   {
     "locationID": 5,
     "locationName": "Grand Hotel",
     "address": "987 Luxury Ln, Suite City, SC 20202",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://theluxtraveller.com/wp-content/uploads/2015/07/2-The-Palace-by-night.jpeg"
   },
   {
     "locationID": 6,
     "locationName": "Beachside Resort",
     "address": "654 Ocean View Dr, Coastal City, CC 30303",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://beachsidehotelcocoabeach.com/wp-content/uploads/2021/05/BHCB-005-Aerial-View_sfw-300x200.jpg"
   },
   {
     "locationID": 7,
     "locationName": "Mountain Retreat",
     "address": "321 Peak Rd, Summit Place, SP 40404",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://wpcdn.us-midwest-1.vip.tn-cloud.net/www.mountainliving.com/content/uploads/2020/12/36-Quartz-AR-198-0269-1024x682.jpg"
   },
   {
     "locationID": 8,
     "locationName": "Urban Art Gallery",
     "address": "456 Gallery Ln, Art Town, AT 50505",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://media.timeout.com/images/100904379/image.jpg"
   },
   {
     "locationID": 9,
     "locationName": "Historic Museum",
     "address": "789 History Blvd, Oldtown, OT 60606",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://www.tripsavvy.com/thmb/UdbgzR6NUzI5HDwf8bFkPZOyA8I=/2899x2175/filters:fill(auto,1)/Chicago-History-Museum-57bf1f683df78cc16e1de146.JPG"
   },
   {
     "locationID": 10,
     "locationName": "Tech Hub",
     "address": "123 Innovation Dr, Tech City, TC 70707",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://usatech-recruit.com/wp-content/uploads/sites/3/2022/02/Chicago-Tech-Hub.jpg"
   },
   {
     "locationID": 11,
     "locationName": "Garden Cafe",
     "address": "321 Blossom St, Floral City, FC 80808",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://coolthingschicago.com/wp-content/uploads/2020/07/shutterstock_7532214671-1536x1025.jpg"
   },
   {
     "locationID": 12,
     "locationName": "Sky High Observatory",
     "address": "654 Starry Rd, Sky Town, ST 90909",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://cdn.choosechicago.com/uploads/2019/06/RP_SKYDECK_11.jpg-900x601.jpg"
   },
   {
     "locationID": 13,
     "locationName": "Aquatic Center",
     "address": "456 Water Way, River City, RC 10110",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://www.holidify.com/images/cmsuploads/compressed/1812834828265117866791503787314n_20210322121642.jpg"
   },
   {
     "locationID": 14,
     "locationName": "Countryside B&B",
     "address": "321 Country Ln, Rural Place, RP 20212",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://i.pinimg.com/originals/96/a2/dd/96a2ddc5d838909d3d2eb419bacdadd8.jpg"
   },
   {
     "locationID": 15,
     "locationName": "Fashion Plaza",
     "address": "789 Trendy Ave, Style City, SC 30313",
     "soonestDateAvailable": "No Bookings Found",
-    "image": ""
+    "image": "https://img2.10bestmedia.com/Images/Photos/354329/Macerich-FOC-17_54_990x660.jpg"
   }
 ]
