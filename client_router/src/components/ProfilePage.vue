@@ -107,6 +107,10 @@ const showModal = (booking) => {
     modalOpen.value = true;
 };
 
+const clearSuccessMessage = () => {
+    successMessage.value = "";
+};
+
 const fetchBookings = async () => {
     loading.value = true;
     error.value = null;
