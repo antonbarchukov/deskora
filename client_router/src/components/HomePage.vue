@@ -217,7 +217,7 @@ const handleCreateBooking = async (passedBooking) => {
         await axios.post("/createBooking", {
             email: user.value.email,
             locationID: passedBooking.locationID,
-            book_start: passedBooking.bookStartx,
+            book_start: passedBooking.bookStart,
             book_end: passedBooking.bookEnd,
         });
         modalOpen.value = false;
