@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2">
                 <RouterLink to="/profile" class="w-full md:w-1/2 lg:w-1/3 cursor" v-show="recentlyBooked && recentlyBooked.locationDetails">
-                    <h1 class="text-xl md:text-2xl font-bold" v-if="$store.state.user">Recently Booked for {{ $store.state.user.email }}</h1>
+                    <h1 class="text-3xl font-bold" v-if="$store.state.user">Recently Booked for {{ $store.state.user.email }}</h1>
                     <div class="w-full my-5">
                         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                             <div class="h-56 flex justify-center items-center">
@@ -38,10 +38,32 @@
                 <div :class="{ 'w-full': !recentlyBooked.locationDetails, 'w-full md:w-1/2 lg:w-2/3 px-5': recentlyBooked.locationDetails }">
                     <div class="border p-4 rounded-lg">
                         <div class="flex justify-between mb-4">
-                            <button class="py-2 px-4 font-semibold rounded-lg focus:outline-none bg-blue-500 text-white" id="desks">Desks</button>
-                            <button class="py-2 px-4 font-semibold rounded-lg focus:outline-none" id="meetingRooms">Meeting Rooms</button>
-                            <button class="py-2 px-4 font-semibold rounded-lg focus:outline-none" id="privateOffice">Private Office</button>
+                            <button
+                                class="py-2 px-4 font-semibold rounded-lg focus:outline-none"
+                                :class="{ 'bg-blue-500': selectedType === 'desks', 'text-white': selectedType === 'desks' }"
+                                id="desks"
+                                @click="selectType('desks')"
+                            >
+                                Desks
+                            </button>
+                            <button
+                                class="py-2 px-4 font-semibold rounded-lg focus:outline-none"
+                                :class="{ 'bg-blue-500': selectedType === 'meetingRooms', 'text-white': selectedType === 'meetingRooms' }"
+                                id="meetingRooms"
+                                @click="selectType('meetingRooms')"
+                            >
+                                Meeting Rooms
+                            </button>
+                            <button
+                                class="py-2 px-4 font-semibold rounded-lg focus:outline-none"
+                                :class="{ 'bg-blue-500': selectedType === 'privateOffice', 'text-white': selectedType === 'privateOffice' }"
+                                id="privateOffice"
+                                @click="selectType('privateOffice')"
+                            >
+                                Private Office
+                            </button>
                         </div>
+
                         <div class="flex flex-wrap -mx-2 mb-4">
                             <div class="px-2 w-1/2">
                                 <label class="block">
@@ -55,7 +77,7 @@
                                 <label class="block">
                                     <span class="text-sm">Location</span>
                                     <div class="flex mt-1">
-                                        <input type="text" class="form-input block w-full rounded-l-md border-r-0 border-gray-300 shadow-sm" />
+                                        <input type="text" class="form-input block w-full rounded-l-md border-r-0 pl-2 border-gray-300 shadow-sm" />
                                         <button class="bg-gray-200 rounded-r-md p-2">
                                             <i class="fas fa-search"></i>
                                         </button>
@@ -65,25 +87,30 @@
                             <div class="px-2 w-1/2">
                                 <label class="block">
                                     <span class="text-sm">Amenities</span>
-                                    <select class="form-select block w-full rounded-md border-gray-300 shadow-sm p-2 mt-1"></select>
+                                    <select class="form-select block w-full rounded-md border-gray-300 shadow-sm p-2 mt-1">
+                                        <option v-for="option in amenitiesOptions" :key="option.id" :value="option.id">{{ option.name }}</option>
+                                    </select>
                                 </label>
                             </div>
                             <div class="px-2 w-1/2">
                                 <label class="block">
                                     <span class="text-sm">Sort By</span>
-                                    <select class="form-select block w-full rounded-md border-gray-300 shadow-sm p-2 mt-1"></select>
+                                    <select class="form-select block w-full rounded-md border-gray-300 shadow-sm p-2 mt-1">
+                                        <option v-for="option in sortOptions" :key="option.id" :value="option.id">{{ option.name }}</option>
+                                    </select>
                                 </label>
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="handleSearch">Search</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- suggestions / search section -->
-            <div class="text-4xl my-4">Suggestions / Search</div>
+            <div v-if="searchQuery" class="text-3xl my-4">Suggestions</div>
+            <div v-if="!searchQuery" class="text-3xl my-4">Search</div>
             <div class="flex flex-wrap -mx-2">
                 <div class="w-full md:w-1/2 lg:w-1/3 px-2 my-2 cursor-pointer" v-for="item in bookData" :key="item" @click="showModal(item)">
                     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -144,6 +171,24 @@ const selectedBooking = ref(null);
 const modalOpen = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
+
+const amenitiesOptions = ref([
+    { id: "wifi", name: "Wi-Fi" },
+    { id: "parking", name: "Parking" },
+    { id: "coffee", name: "Free Coffee" },
+    { id: "conference", name: "Conference Room" },
+]);
+
+const sortOptions = ref([
+    { id: "priceLowHigh", name: "Price: Low to High" },
+    { id: "priceHighLow", name: "Price: High to Low" },
+    { id: "ratingHighLow", name: "Rating: High to Low" },
+    { id: "ratingLowHigh", name: "Rating: Low to High" },
+]);
+
+const selectedType = ref("");
+
+const searchQuery = ref("false");
 
 // Base URL for axios
 axios.defaults.baseURL = "http://localhost:3000";
@@ -241,6 +286,14 @@ function formatDate(dateStr) {
         return dateStr; // Return the original string if parsing fails
     }
 }
+
+const selectType = (type) => {
+    selectedType.value = type;
+};
+
+const handleSearch = () => {
+    searchQuery.value = !searchQuery.value;
+};
 
 // Component initialization
 onBeforeMount(async () => {
